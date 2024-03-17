@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timer Notification</title>
+</head>
+<body>
+<h1>Timer Notification</h1>
+<label for="timer">Set Timer (in seconds):</label>
+<input type="number" id="timer" min="1" value="10">
+<button onclick="startTimer()">Start Timer</button>
+
+<script>
+function startTimer() {
+    const timerInput = document.getElementById('timer');
+    const duration = parseInt(timerInput.value, 10);
+    
+    if (isNaN(duration) || duration <= 0) {
+        alert("Please enter a valid duration (greater than 0)!");
+        return;
+    }
+    
+    const endTime = new Date().getTime() + duration * 1000;
+    
+    const intervalId = setInterval(function() {
+        const currentTime = new Date().getTime();
+        const remainingTime = Math.max(0, endTime - currentTime);
+        
+        if (remainingTime === 0) {
+            clearInterval(intervalId);
+            notifyUser("Timer has ended!");
+        }
+        
+        const minutes = Math.floor(remainingTime / (1000 * 60));
+        const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+        document.getElementById('timerDisplay').innerText = `${minutes}m ${seconds}s`;
+    }, 1000);
+}
+
+function notifyUser(message) {
+    if ('Notification' in window) {
+        Notification.requestPermission().then(function(permission) {
+            if (permission === 'granted') {
+                new Notification(message);
+            } else {
+                alert(message);
+            }
+        });
+    } else {
+        alert(message);
+    }
+}
+</script>
+
+<p id="timerDisplay">Timer will display here</p>
+</body>
+</html>
