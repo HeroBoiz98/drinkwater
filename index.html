@@ -39,16 +39,21 @@ function startTimer() {
 }
 
 function notifyUser(message) {
-    if ('Notification' in window) {
+    if ('Notification' in window && 'serviceWorker' in navigator) {
         Notification.requestPermission().then(function(permission) {
             if (permission === 'granted') {
-                new Notification(message);
+                navigator.serviceWorker.register('service-worker.js').then(function(registration) {
+                    registration.showNotification('Timer Notification', {
+                        body: message,
+                        icon: 'notification-icon.png'
+                    });
+                });
             } else {
                 alert(message);
             }
         });
     } else {
-        alert(message);
+        alert("Your browser doesn't support notifications.");
     }
 }
 </script>
@@ -56,3 +61,4 @@ function notifyUser(message) {
 <p id="timerDisplay">Timer will display here</p>
 </body>
 </html>
+ 
